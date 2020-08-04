@@ -42,7 +42,7 @@ public class ExternalToolServiceBean {
     }
 
     /**
-     * @param type explore or configure
+     * @param type general, explore or configure
      * @return A list of tools or an empty list.
      */
     public List<ExternalTool> findDatasetToolsByType(Type type) {
@@ -52,7 +52,7 @@ public class ExternalToolServiceBean {
     }
 
     /**
-     * @param type explore or configure
+     * @param type general, explore or configure
      * @return A list of tools or an empty list.
      */
     public List<ExternalTool> findFileToolsByType(Type type) {
