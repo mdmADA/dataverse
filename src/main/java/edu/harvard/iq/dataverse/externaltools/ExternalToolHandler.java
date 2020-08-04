@@ -3,8 +3,10 @@ package edu.harvard.iq.dataverse.externaltools;
 import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetVersion;
+import edu.harvard.iq.dataverse.DataverseSession;
 import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.GlobalId;
+import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
 import edu.harvard.iq.dataverse.authorization.users.ApiToken;
 import edu.harvard.iq.dataverse.externaltools.ExternalTool.ReservedWord;
 import edu.harvard.iq.dataverse.util.SystemConfig;
@@ -12,6 +14,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -26,11 +29,14 @@ public class ExternalToolHandler {
 
     private static final Logger logger = Logger.getLogger(ExternalToolHandler.class.getCanonicalName());
 
+    @Inject
+    DataverseSession session;
+    
     private final ExternalTool externalTool;
     private final DataFile dataFile;
     private final Dataset dataset;
     private final FileMetadata fileMetadata;
-
+    private AuthenticatedUser user;
     private ApiToken apiToken;
     private String localeCode;
 
@@ -133,6 +139,9 @@ public class ExternalToolHandler {
     private String getQueryParam(String key, String value) {
         ReservedWord reservedWord = ReservedWord.fromString(value);
         switch (reservedWord) {
+            case USER_ID:
+                AuthenticatedUser au = (AuthenticatedUser)session.getUser();
+                return key + "=" + au.getId().toString();
             case FILE_ID:
                 // getDataFile is never null for file tools because of the constructor
                 return key + "=" + getDataFile().getId();
