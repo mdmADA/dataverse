@@ -299,7 +299,6 @@ public class ExternalTool implements Serializable {
         // better. The choice of curly braces is somewhat arbitrary, but has been observed in documenation for
         // various REST APIs. For example, "Variable substitutions will be made when a variable is named in {brackets}."
         // from https://swagger.io/specification/#fixed-fields-29 but that's for URLs.
-        USER_ID("userId"), //userId is the numeric user id
         FILE_ID("fileId"),
         FILE_PID("filePid"),
         SITE_URL("siteUrl"),
