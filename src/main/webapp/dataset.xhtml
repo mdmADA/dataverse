@@ -131,6 +131,19 @@
                                     <!-- ActionButtonBlock -->
                                     <div id="actionButtonBlock" jsf:rendered="#{!widgetWrapper.widgetView}">
                                         <!-- DOWNLOAD/ACCESS DATASET -->
+                                        <!-- GENERAL -->
+                                            <ui:fragment rendered="#{DatasetPage.datasetGeneralTools.size() >= 1}">
+                                                <li class="dropdown-header">#{bundle['dataset.generalBtn']} <span class="glyphicon glyphicon-equalizer"/></li>
+                                                <!-- General tool links -->
+                                                <ui:repeat var="tool" value="#{DatasetPage.datasetGeneralTools}">
+                                                    <li>
+                                                    <h:commandLink styleClass="btn-explore" action="#{DatasetPage.launch(tool)}">
+                                                        <h:outputText value="#{tool.getDisplayNameLang()}"/>
+                                                    </h:commandLink>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ui:fragment>
+                                        <!-- END: GENERAL -->
                                         <div class="btn-group btn-group-justified" 
                                              jsf:rendered="#{showAccessDatasetButtonGroup}">
                                             <div class="btn-group">
