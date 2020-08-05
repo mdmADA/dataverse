@@ -54,6 +54,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.ConstraintViolation;
+import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.event.TabChangeEvent;
 
@@ -969,7 +970,7 @@ public class FilePage implements java.io.Serializable {
         this.selectedTool = selectedTool;
     }
     
-    public String preview(ExternalTool externalTool) {
+    private ApiToken getApiTokenForTool(){
         ApiToken apiToken = null;
         User user = session.getUser();
         if (user instanceof AuthenticatedUser) {
@@ -981,12 +982,29 @@ public class FilePage implements java.io.Serializable {
             apiToken = new ApiToken();
             apiToken.setTokenString(privateUrl.getToken());
         }
+        return apiToken;
+    }
+    
+    public String preview(ExternalTool externalTool) {
+        ApiToken apiToken = getApiTokenForTool();
         if(externalTool == null){
             return "";
         }
         ExternalToolHandler externalToolHandler = new ExternalToolHandler(externalTool, file, apiToken, getFileMetadata(), session.getLocaleCode());
         String toolUrl = externalToolHandler.getToolUrlForPreviewMode();
         return toolUrl;
+    }
+    
+    public void requestAccessExternal(ExternalTool tool){
+        if(tool == null){
+            return;
+        }
+        ApiToken apiToken = getApiTokenForTool();
+        
+        ExternalToolHandler externalToolHandler = new ExternalToolHandler(tool, file, apiToken, getFileMetadata(), session.getLocaleCode());
+        String toolUrl = externalToolHandler.getToolUrlWithQueryParams();
+        logger.fine("Request Access with " + toolUrl);
+        PrimeFaces.current().executeScript("window.open('"+toolUrl + "', target='_blank');"); 
     }
     
     //Provenance fragment bean calls this to show error dialogs after popup failure
