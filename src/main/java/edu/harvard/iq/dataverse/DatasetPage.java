@@ -337,7 +337,8 @@ public class DatasetPage implements java.io.Serializable {
     // TODO: Consider renaming "exploreToolsByFileId" to "fileExploreToolsByFileId".
     Map<Long, List<ExternalTool>> exploreToolsByFileId = new HashMap<>();
     private List<ExternalTool> datasetExploreTools;
-    private List<ExternalTool> datasetGeneralTools = new ArrayList<>();
+    private List<ExternalTool> datasetGeneralTools;
+    private ExternalTool fileAccessRequestTool; //can really only be 1 I would think
     
     public Boolean isHasRsyncScript() {
         return hasRsyncScript;
@@ -2073,6 +2074,7 @@ public class DatasetPage implements java.io.Serializable {
         exploreTools = externalToolService.findFileToolsByType(ExternalTool.Type.EXPLORE);
         datasetExploreTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.EXPLORE);
         datasetGeneralTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.GENERAL);
+        fileAccessRequestTool = externalToolService.findFileToolsByType(ExternalTool.Type.REQUESTACCESS).get(0);
         rowsPerPage = 10;
       
         
@@ -5439,6 +5441,11 @@ public class DatasetPage implements java.io.Serializable {
     public List<ExternalTool> getDatasetGeneralTools() {
         return datasetGeneralTools;
     }
+    
+    public ExternalTool getFileAccessRequestAccessTool(){
+        return fileAccessRequestTool;
+    }
+    
     
     Boolean thisLatestReleasedVersion = null;
     
