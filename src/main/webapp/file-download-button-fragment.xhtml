@@ -361,7 +361,7 @@
             <p:commandLink styleClass="btn-request" rendered="#{fileDownloadHelper.session.user.authenticated 
                                                                     and !requestAccessPopupRequired}"
                         process="@this"
-                        actionListener="#{filePage.requestAccessExternal(fileAccessRequestTool)}"
+                        actionListener="#{FilePage.requestAccessExternal(fileAccessRequestTool)}"
                         update="@this"
                         disabled="#{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user)}">
                 #{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user) ? bundle['file.accessRequested'] : bundle['file.requestAccess']}
@@ -369,7 +369,7 @@
             <p:commandLink styleClass="btn-request" rendered="#{fileDownloadHelper.session.user.authenticated 
                                                                     and requestAccessPopupRequired}"
                         process="@this"
-                        actionListener="#{filePage.requestAccessExternal(fileAccessRequestTool)}"
+                        actionListener="#{FilePage.requestAccessExternal(fileAccessRequestTool)}"
                         
                         onclick="PF('requestAccessPopup').show()"
                         id="requestAccessPopupLink"
