@@ -351,7 +351,7 @@
     
     
     
-    
+  
     <!-- Request Access Button -->
     <ui:fragment rendered="#{!fileMetadata.datasetVersion.deaccessioned and !fileDownloadHelper.canDownloadFile(fileMetadata)
                              and fileMetadata.dataFile.owner.fileAccessRequest}">
@@ -361,7 +361,7 @@
             <p:commandLink styleClass="btn-request" rendered="#{fileDownloadHelper.session.user.authenticated 
                                                                     and !requestAccessPopupRequired}"
                         process="@this"
-                        actionListener="#{(fileAccessRequestTool == null) ? fileDownloadHelper.requestAccess(fileMetadata.dataFile) : filePage.requestAccessExternal(fileAccessRequestTool)}"
+                        actionListener="#{filePage.requestAccessExternal(fileAccessRequestTool)}"
                         update="@this"
                         disabled="#{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user)}">
                 #{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user) ? bundle['file.accessRequested'] : bundle['file.requestAccess']}
@@ -369,7 +369,7 @@
             <p:commandLink styleClass="btn-request" rendered="#{fileDownloadHelper.session.user.authenticated 
                                                                     and requestAccessPopupRequired}"
                         process="@this"
-                        actionListener="#{(fileAccessRequestTool == null) ? fileDownloadHelper.addFileForRequestAccess(fileMetadata.dataFile) : filePage.requestAccessExternal(fileAccessRequestTool)}"
+                        actionListener="#{filePage.requestAccessExternal(fileAccessRequestTool)}"
                         
                         onclick="PF('requestAccessPopup').show()"
                         id="requestAccessPopupLink"
