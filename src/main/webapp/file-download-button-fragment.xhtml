@@ -345,6 +345,13 @@
     </ui:fragment>
     <!-- Download Button -->
     
+    
+    
+    
+    
+    
+    
+    
     <!-- Request Access Button -->
     <ui:fragment rendered="#{!fileMetadata.datasetVersion.deaccessioned and !fileDownloadHelper.canDownloadFile(fileMetadata)
                              and fileMetadata.dataFile.owner.fileAccessRequest}">
@@ -354,7 +361,7 @@
             <p:commandLink styleClass="btn-request" rendered="#{fileDownloadHelper.session.user.authenticated 
                                                                     and !requestAccessPopupRequired}"
                         process="@this"
-                        actionListener="#{fileDownloadHelper.requestAccess(fileMetadata.dataFile)}"
+                        actionListener="#{(fileAccessRequestTool == null) ? fileDownloadHelper.requestAccess(fileMetadata.dataFile) : filePage.requestAccessExternal(fileAccessRequestTool)}"
                         update="@this"
                         disabled="#{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user)}">
                 #{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user) ? bundle['file.accessRequested'] : bundle['file.requestAccess']}
@@ -362,7 +369,8 @@
             <p:commandLink styleClass="btn-request" rendered="#{fileDownloadHelper.session.user.authenticated 
                                                                     and requestAccessPopupRequired}"
                         process="@this"
-                        actionListener="#{fileDownloadHelper.addFileForRequestAccess(fileMetadata.dataFile)}"
+                        actionListener="#{(fileAccessRequestTool == null) ? fileDownloadHelper.addFileForRequestAccess(fileMetadata.dataFile) : filePage.requestAccessExternal(fileAccessRequestTool)}"
+                        
                         onclick="PF('requestAccessPopup').show()"
                         id="requestAccessPopupLink"
                         disabled="#{fileMetadata.dataFile.fileAccessRequesters.contains(dataverseSession.user)}">
@@ -413,6 +421,15 @@
         </ui:fragment>
     </ui:fragment>
     <!-- END: Request Access Button -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     <!-- Explore button -->
     <ui:fragment rendered="#{fileDownloadHelper.canDownloadFile(fileMetadata) and not empty exploreTools or (worldMapPermissionHelper.canUserSeeExploreWorldMapButtonFromPage(fileMetadata))}">
