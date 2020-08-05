@@ -995,7 +995,7 @@ public class FilePage implements java.io.Serializable {
         return toolUrl;
     }
     
-    public void requestAccessExternal(ExternalTool tool){
+    public void requestAccess(ExternalTool tool){
         if(tool == null){
             return;
         }
@@ -1003,7 +1003,7 @@ public class FilePage implements java.io.Serializable {
         
         ExternalToolHandler externalToolHandler = new ExternalToolHandler(tool, file, apiToken, getFileMetadata(), session.getLocaleCode());
         String toolUrl = externalToolHandler.getToolUrlWithQueryParams();
-        logger.fine("Request Access with " + toolUrl);
+        logger.info("Request Access with " + toolUrl);
         PrimeFaces.current().executeScript("window.open('"+toolUrl + "', target='_blank');"); 
     }
     
