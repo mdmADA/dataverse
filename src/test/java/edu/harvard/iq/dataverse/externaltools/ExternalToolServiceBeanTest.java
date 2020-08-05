@@ -330,7 +330,7 @@ public class ExternalToolServiceBeanTest {
         }
         assertNotNull(expectedException);
         System.out.println("exception: " + expectedException);
-        assertEquals("Type must be one of these values: [explore, configure, general,requestaccess].", expectedException.getMessage());
+        assertEquals("Type must be one of these values: [explore, configure, general, requestaccess].", expectedException.getMessage());
     }
 
     @Test
