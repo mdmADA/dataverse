@@ -131,19 +131,6 @@
                                     <!-- ActionButtonBlock -->
                                     <div id="actionButtonBlock" jsf:rendered="#{!widgetWrapper.widgetView}">
                                         <!-- DOWNLOAD/ACCESS DATASET -->
-                                        <!-- GENERAL -->
-                                            <ui:fragment rendered="#{DatasetPage.datasetGeneralTools.size() >= 1}">
-                                                <li class="dropdown-header">#{bundle['dataset.generalBtn']} <span class="glyphicon glyphicon-equalizer"/></li>
-                                                <!-- General tool links -->
-                                                <ui:repeat var="tool" value="#{DatasetPage.datasetGeneralTools}">
-                                                    <li>
-                                                    <h:commandLink styleClass="btn-explore" action="#{DatasetPage.launch(tool)}">
-                                                        <h:outputText value="#{tool.getDisplayNameLang()}"/>
-                                                    </h:commandLink>
-                                                    </li>
-                                                </ui:repeat>
-                                            </ui:fragment>
-                                        <!-- END: GENERAL -->
                                         <div class="btn-group btn-group-justified" 
                                              jsf:rendered="#{showAccessDatasetButtonGroup}">
                                             <div class="btn-group">
@@ -252,12 +239,12 @@
                                                             </ul>
                                                         </li>
                                                     </ui:fragment>
-                                                    <!-- END: COMPUTE -->
+                                                    <!-- END: COMPUTE -->                                                 
                                                 </ul>
                                             </div>
                                         </div>
                                         <!-- END: DOWNLOAD/ACCESS DATASET -->
-
+                         
                                         <!-- PUBLISH DATASET -->
                                         <div class="btn-group btn-group-justified" jsf:rendered="#{showPublishLink or showSubmitForReviewLink}">
                                             <div class="btn-group">
@@ -428,6 +415,29 @@
                                             </p:commandLink>
                                         </div>
                                         <!-- END: Contact/Share Button Group -->
+                                        
+                                        <!-- GENERAL -->
+                                        <div class="btn-group btn-group-justified" rendered="#{DatasetPage.datasetGeneralTools.size() >= 1}" >
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-primary btn-access-dataset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    #{bundle['dataset.generalBtn']} <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu pull-right text-left">
+                                                    <ui:fragment >
+                                                        <li class="dropdown-header">#{bundle['dataset.generalBtn.header.options']} <span class="glyphicon glyphicon-export"/></li>
+                                                        <!-- Explore tool links -->
+                                                        <ui:repeat var="tool" value="#{DatasetPage.datasetGeneralTools}">
+                                                            <li>
+                                                                <h:commandLink styleClass="btn-explore" action="#{DatasetPage.launch(tool)}">
+                                                                    <h:outputText value="#{tool.getDisplayNameLang()}"/>
+                                                                </h:commandLink>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ui:fragment>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <!-- END: GENERAL -->                                     
                                     </div>
                                     <!-- END: ActionButtonBlock -->
                                 </div>
