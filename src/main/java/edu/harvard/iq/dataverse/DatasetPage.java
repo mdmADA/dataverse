@@ -5442,7 +5442,7 @@ public class DatasetPage implements java.io.Serializable {
         return datasetGeneralTools;
     }
     
-    public ExternalTool getFileAccessRequestAccessTool(){
+    public ExternalTool getFileAccessRequestTool(){
         return fileAccessRequestTool;
     }
     
