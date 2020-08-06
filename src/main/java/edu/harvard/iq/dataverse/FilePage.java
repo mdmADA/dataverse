@@ -82,6 +82,7 @@ public class FilePage implements java.io.Serializable {
     private List<ExternalTool> configureTools;
     private List<ExternalTool> exploreTools;
     private List<ExternalTool> toolsWithPreviews;
+    private ExternalTool fileAccessRequestTool;
     private Long datasetVersionId;
 
     @EJB
@@ -231,6 +232,7 @@ public class FilePage implements java.io.Serializable {
             if(!toolsWithPreviews.isEmpty()){
                 setSelectedTool(toolsWithPreviews.get(0));                
             }
+            fileAccessRequestTool = externalToolService.findFileToolsByType(ExternalTool.Type.REQUESTACCESS).get(0);//should only be 1 if there is any
         } else {
 
             return permissionsWrapper.notFound();
@@ -959,6 +961,11 @@ public class FilePage implements java.io.Serializable {
     public List<ExternalTool> getToolsWithPreviews() {
         return toolsWithPreviews;
     }
+    
+    public ExternalTool getFileAccessRequestTool(){
+        return fileAccessRequestTool;
+    }
+    
     
     private ExternalTool selectedTool;
 
