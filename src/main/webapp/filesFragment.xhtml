@@ -577,7 +577,7 @@
                     <span class="glyphicon glyphicon-bullhorn"/> #{bundle['file.requestAccess']}
                 </p:commandLink>
                 
-                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and DatasetPage.fileAccessRequestTool == null}"
+                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and DatasetPage.datasetFileAccessRequestTool == null}"
                                 styleClass="btn btn-default btn-request"                                   
                                 update="@form" 
                                 action="#{DatasetPage.requestAccessMultipleFiles()}"
