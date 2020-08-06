@@ -574,7 +574,7 @@
                                 update="@form" 
                                 action="#{DatasetPage.requestAccess(DatasetPage.datasetFileAccessRequestTool)}"
                                 disabled="#{DatasetPage.locked}">
-                    <span class="glyphicon glyphicon-bullhorn"/> #{bundle['file.requestAccess'] + " tool"}
+                    <span class="glyphicon glyphicon-bullhorn"/> #{bundle['file.requestAccess']}
                 </p:commandLink>
                 
                 <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and DatasetPage.fileAccessRequestTool == null}"
