@@ -2075,9 +2075,8 @@ public class DatasetPage implements java.io.Serializable {
         exploreTools = externalToolService.findFileToolsByType(ExternalTool.Type.EXPLORE);
         datasetExploreTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.EXPLORE);
         datasetGeneralTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.GENERAL);
-        fileAccessRequestTool .get(0);
-        fileAccessRequestTools = = externalToolService.findFileToolsByType(ExternalTool.Type.REQUESTACCESS);
-        
+        fileAccessRequestTools = externalToolService.findFileToolsByType(ExternalTool.Type.REQUESTACCESS);
+        datasetFileAccessRequestTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.REQUESTACCESS);
         rowsPerPage = 10;
       
         
