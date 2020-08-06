@@ -338,8 +338,9 @@ public class DatasetPage implements java.io.Serializable {
     Map<Long, List<ExternalTool>> exploreToolsByFileId = new HashMap<>();
     private List<ExternalTool> datasetExploreTools;
     private List<ExternalTool> datasetGeneralTools;
-    private ExternalTool fileAccessRequestTool; //can really only be 1 I would think
-    
+    private List<ExternalTool> fileAccessRequestTools; 
+    private List<ExternalTool> datasetFileAccessRequestTools;
+            
     public Boolean isHasRsyncScript() {
         return hasRsyncScript;
     }
@@ -2074,7 +2075,9 @@ public class DatasetPage implements java.io.Serializable {
         exploreTools = externalToolService.findFileToolsByType(ExternalTool.Type.EXPLORE);
         datasetExploreTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.EXPLORE);
         datasetGeneralTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.GENERAL);
-        fileAccessRequestTool = externalToolService.findFileToolsByType(ExternalTool.Type.REQUESTACCESS).get(0);
+        fileAccessRequestTool .get(0);
+        fileAccessRequestTools = = externalToolService.findFileToolsByType(ExternalTool.Type.REQUESTACCESS);
+        
         rowsPerPage = 10;
       
         
@@ -5442,7 +5445,32 @@ public class DatasetPage implements java.io.Serializable {
         return datasetGeneralTools;
     }
     
+    public List<ExternalTool> getFileAccessRequestTools(){
+        return fileAccessRequestTools;
+    }
+    
+    public List<ExternalTool> getDatasetFileAccessRequestTools(){
+        return datasetFileAccessRequestTools;
+    }
+   
+           
     public ExternalTool getFileAccessRequestTool(){
+        ExternalTool fileAccessRequestTool = null;
+        
+        if(fileAccessRequestTools.isEmpty()){
+            fileAccessRequestTool = fileAccessRequestTools.get(0);
+        }
+       
+        return fileAccessRequestTool;
+    }
+    
+    public ExternalTool getDatasetFileAccessRequestTool(){
+        ExternalTool fileAccessRequestTool = null;
+        
+        if(fileAccessRequestTools.isEmpty()){
+            fileAccessRequestTool = datasetFileAccessRequestTools.get(0);
+        }
+       
         return fileAccessRequestTool;
     }
     
