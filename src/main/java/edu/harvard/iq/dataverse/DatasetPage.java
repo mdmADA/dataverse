@@ -5456,7 +5456,7 @@ public class DatasetPage implements java.io.Serializable {
     public ExternalTool getFileAccessRequestTool(){
         ExternalTool fileAccessRequestTool = null;
         
-        if(fileAccessRequestTools.isEmpty()){
+        if(!fileAccessRequestTools.isEmpty()){
             fileAccessRequestTool = fileAccessRequestTools.get(0);
         }
        
@@ -5464,13 +5464,13 @@ public class DatasetPage implements java.io.Serializable {
     }
     
     public ExternalTool getDatasetFileAccessRequestTool(){
-        ExternalTool fileAccessRequestTool = null;
+        ExternalTool datasetFileAccessRequestTool = null;
         
-        if(fileAccessRequestTools.isEmpty()){
-            fileAccessRequestTool = datasetFileAccessRequestTools.get(0);
+        if(!datasetFileAccessRequestTools.isEmpty()){
+            datasetFileAccessRequestTool = datasetFileAccessRequestTools.get(0);
         }
        
-        return fileAccessRequestTool;
+        return datasetFileAccessRequestTool;
     }
     
     
