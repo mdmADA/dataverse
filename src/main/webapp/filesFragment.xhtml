@@ -569,12 +569,12 @@
                         </ul>
                 </div>
 
-                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and DatasetPage.fileAccessRequestTool != null}"
+                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and DatasetPage.datasetFileAccessRequestTool != null}"
                                 styleClass="btn btn-default btn-request"                                   
                                 update="@form" 
-                                action="#{DatasetPage.requestAccess(DatasetPage.fileAccessRequestTool)}"
+                                action="#{DatasetPage.requestAccess(DatasetPage.datasetFileAccessRequestTool)}"
                                 disabled="#{DatasetPage.locked}">
-                    <span class="glyphicon glyphicon-bullhorn"/> #{bundle['file.requestAccess']}
+                    <span class="glyphicon glyphicon-bullhorn"/> #{bundle['file.requestAccess'] + " tool"}
                 </p:commandLink>
                 
                 <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and DatasetPage.fileAccessRequestTool == null}"
