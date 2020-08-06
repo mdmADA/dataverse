@@ -5107,7 +5107,7 @@ public class DatasetPage implements java.io.Serializable {
             }
         }
     }
-
+    
     public boolean isSortButtonEnabled() {
         /**
          * @todo The "Sort" Button seems to stop responding to mouse clicks
