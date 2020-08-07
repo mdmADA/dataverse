@@ -571,8 +571,8 @@
 
                 <!-- in call below, we want to turn OFF file access request as it is in dataverse and then activate the External Request Access tool.
                 So it is necessary to add in the check that 'file access request' has been disabled (even though it is part of the isFileAccessRequestMultiButtonRequired() method.-->
-                -->
-                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiButtonRequired and !dataset.isFileAccessRequest() and DatasetPage.datasetFileAccessRequestTool != null}"
+               
+                <p:commandLink rendered="#{DatasetPage.datasetFileAccessRequestTool != null and DatasetPage.sessionUserAuthenticated and !DatasetPage.downloadAllButtonEnabled and !DatasetPage.fileAccessRequest}"
                                 styleClass="btn btn-default btn-request"                                   
                                 update="@form" 
                                 action="#{DatasetPage.requestAccess(DatasetPage.datasetFileAccessRequestTool)}"
