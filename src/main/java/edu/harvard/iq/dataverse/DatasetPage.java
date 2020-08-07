@@ -5013,20 +5013,21 @@ public class DatasetPage implements java.io.Serializable {
             }
         }
         return false;
-    } 
+    }
     
     private Boolean downloadButtonAllEnabled = null;
 
     public boolean isDownloadAllButtonEnabled() {
 
         if (downloadButtonAllEnabled == null) {
+            downloadButtonAllEnabled = true;
             for (FileMetadata fmd : workingVersion.getFileMetadatas()) {
                 if (!this.fileDownloadHelper.canDownloadFile(fmd)) {
                     downloadButtonAllEnabled = false;
                     break;
                 }
             }
-            downloadButtonAllEnabled = true;
+            
         }
         return downloadButtonAllEnabled;
     }
