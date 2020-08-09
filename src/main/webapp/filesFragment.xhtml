@@ -587,7 +587,7 @@
                                 disabled="#{DatasetPage.locked}">
                     <span class="glyphicon glyphicon-bullhorn"/> #{bundle['file.requestAccess']}
                 </p:commandLink>
-                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiSignUpButtonRequired}"
+                <p:commandLink rendered="#{DatasetPage.fileAccessRequestMultiSignUpButtonRequired or (DatasetPage.datasetFileAccessRequestTool != null and !DatasetPage.sessionUserAuthenticated) }"
                                 styleClass="btn btn-default btn-request"
                                 onclick="PF('accessSignUpLogIn_popup').show()"
                                 disabled="#{DatasetPage.locked}">
