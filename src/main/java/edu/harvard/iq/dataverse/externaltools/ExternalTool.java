@@ -297,10 +297,12 @@ public class ExternalTool implements Serializable {
         FILE_PID("filePid"),
         SITE_URL("siteUrl"),
         API_TOKEN("apiToken"),
+        USER_ID("userId"),
         // datasetId is the database id
         DATASET_ID("datasetId"),
         // datasetPid is the DOI or Handle
         DATASET_PID("datasetPid"),
+        GUESTBOOK_ID("guestbookId"),
         DATASET_VERSION("datasetVersion"),
         FILE_METADATA_ID("fileMetadataId"),
         LOCALE_CODE("localeCode");
