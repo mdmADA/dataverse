@@ -1046,10 +1046,20 @@ public class FilePage implements java.io.Serializable {
         return apiToken;
     }
     
+    private Long getUserIdForTool(){
+        User user = session.getUser();
+        Long userId = null;
+        if (user instanceof AuthenticatedUser){
+            userId = ((AuthenticatedUser)user).getId();
+        } //otherwise?
+        return userId;
+    }
+    
     public void requestAccess(ExternalTool tool){
         ApiToken apiToken = getApiTokenForTool();
-        
-        ExternalToolHandler externalToolHandler = new ExternalToolHandler(tool, file, apiToken, file.getFileMetadata() ,session.getLocaleCode());
+        Long userId = getUserIdForTool();
+                  
+        ExternalToolHandler externalToolHandler = new ExternalToolHandler(tool, file, apiToken, userId, file.getFileMetadata(),file.getFileMetadata().getDatasetVersion().getDataset().getGuestbook().getId(),session.getLocaleCode());
         String toolUrl = externalToolHandler.getToolUrlWithQueryParams();
         logger.fine("Request Access with " + toolUrl);
         PrimeFaces.current().executeScript("window.open('"+toolUrl + "', target='_blank');"); 
