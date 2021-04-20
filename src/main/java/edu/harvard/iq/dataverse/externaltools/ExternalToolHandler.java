@@ -38,8 +38,8 @@ public class ExternalToolHandler {
     private final FileMetadata fileMetadata;
 
     private ApiToken apiToken;
-    private int userId;
-    private int guestbookId;
+    private Long userId;
+    private Long guestbookId;
     private String localeCode;
     
     /**
@@ -69,7 +69,7 @@ public class ExternalToolHandler {
         this.localeCode = localeCode;
     }
     
-    public ExternalToolHandler(ExternalTool externalTool, DataFile dataFile, ApiToken apiToken, int userId, FileMetadata fileMetadata, int guestbookId, String localeCode){
+    public ExternalToolHandler(ExternalTool externalTool, DataFile dataFile, ApiToken apiToken, Long userId, FileMetadata fileMetadata, Long guestbookId, String localeCode){
         this(externalTool,dataFile,apiToken,fileMetadata,localeCode);
         this.userId = userId;
         this.guestbookId = guestbookId;
@@ -281,6 +281,16 @@ public class ExternalToolHandler {
             
     public String getToolUrlWithQueryParams() {
         return externalTool.getToolUrl() + getQueryParametersForUrl();
+    }
+    
+    public String getToolUrlWithEncryptedParams() {
+        String url = "";
+        try{
+           url = externalTool.getToolUrl() + getEncryptedQueryParametersForUrl();
+        } catch(IOException exc){
+            logger.severe("Error getting Encrypted Params.");
+        }
+        return url;
     }
     
     public String getToolUrlForPreviewMode() {
