@@ -16,6 +16,12 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import java.net.HttpURLConnection;
+import org.json.simple.JSONObject;
+import java.net.URL;
+import java.io.OutputStream;
+import java.io.IOException;
+import javax.ws.rs.core.Response;
 
 /**
  * Handles an operation on a specific file. Requires a file id in order to be
@@ -32,8 +38,10 @@ public class ExternalToolHandler {
     private final FileMetadata fileMetadata;
 
     private ApiToken apiToken;
+    private int userId;
+    private int guestbookId;
     private String localeCode;
-
+    
     /**
      * File level tool
      *
@@ -60,6 +68,12 @@ public class ExternalToolHandler {
         dataset = fileMetadata.getDatasetVersion().getDataset();
         this.localeCode = localeCode;
     }
+    
+    public ExternalToolHandler(ExternalTool externalTool, DataFile dataFile, ApiToken apiToken, int userId, FileMetadata fileMetadata, int guestbookId, String localeCode){
+        this(externalTool,dataFile,apiToken,fileMetadata,localeCode);
+        this.userId = userId;
+        this.guestbookId = guestbookId;
+    }     
 
     /**
      * Dataset level tool
@@ -129,7 +143,7 @@ public class ExternalToolHandler {
             return "?" + String.join("&", params) + "&preview=true";
         }
     }
-
+    
     private String getQueryParam(String key, String value) {
         ReservedWord reservedWord = ReservedWord.fromString(value);
         switch (reservedWord) {
@@ -150,6 +164,13 @@ public class ExternalToolHandler {
                 if (theApiToken != null) {
                     apiTokenString = theApiToken.getTokenString();
                     return key + "=" + apiTokenString;
+                }
+                break;
+            case USER_ID:
+                return key + "=" + this.userId;
+            case GUESTBOOK_ID:
+                if(dataset.getGuestbook() != null){
+                    return key + "=" + dataset.getGuestbook().getId().toString();
                 }
                 break;
             case DATASET_ID:
@@ -184,6 +205,80 @@ public class ExternalToolHandler {
         return null;
     }
 
+    public String getEncryptedQueryParametersForUrl() throws IOException{
+        
+        JSONObject cipherPayload = this.getJSONPayloadForEncryption();
+        
+        String ciphertextUserXAgentValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.13TNSHDaxJyPUvJhoQ0z2bSwH7jUjXqBNxvikDgRSQM";
+        String encryptedParams = "";
+        String ciphertextUserXAgentHeader = "User-X-Agent";
+        //get this from the database? where? needs to be changed frequently I would think
+        
+        URL ciphertextUrl = new URL("https://dataverse-tools.ada.edu.au/api/ciphertext");
+        HttpURLConnection connection = (HttpURLConnection)ciphertextUrl.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json; utf-8");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty(ciphertextUserXAgentHeader,ciphertextUserXAgentValue);
+        connection.setDoOutput(true);
+        
+        try(OutputStream os = connection.getOutputStream()) {
+            byte[] input = cipherPayload.toString().getBytes();
+            os.write(input, 0, input.length);			
+        }
+        
+        int status = connection.getResponseCode();
+        if (status != 200) {
+            logger.warning("Failed to get cipher from " + ciphertextUrl.toString());
+            return encryptedParams;
+        }
+        
+        JsonObject cipherJSON = Json.createReader(connection.getInputStream()).readObject();
+        encryptedParams = cipherJSON.getString("ciphertext");
+        
+        return encryptedParams;
+    }
+    
+    private JSONObject getJSONPayloadForEncryption(){
+        List<String> params = this.getQueryKeyValuePairs();
+        
+        //create a json object with the payload to send for encryption
+        JSONObject json = new JSONObject();
+        JSONObject payload = new JSONObject();
+        String[] param_key_value = null;
+        for (String param : params) {
+           param_key_value = param.split("=");
+           payload.put(param_key_value[0], param_key_value[1]);	
+        }
+        json.put("payload", payload); //needs to be configurable
+        return json;
+    } 
+    
+    private List<String> getQueryKeyValuePairs(){
+        List<String> params = new ArrayList<>();
+        String toolParameters = externalTool.getToolParameters();
+        JsonReader jsonReader = Json.createReader(new StringReader(toolParameters));
+        JsonObject obj = jsonReader.readObject();
+        JsonArray queryParams = obj.getJsonArray("queryParameters");
+        if (queryParams == null || queryParams.isEmpty()) {
+            return params;
+        }
+        
+        queryParams.getValuesAs(JsonObject.class).forEach((queryParam) -> {
+            queryParam.keySet().forEach((key) -> {
+                String value = queryParam.getString(key);
+                String param = getQueryParam(key, value);
+                if (param != null && !param.isEmpty()) {
+                    params.add(param);
+                }
+            });
+        });
+        
+        return params;
+    }   
+    
+    
+            
     public String getToolUrlWithQueryParams() {
         return externalTool.getToolUrl() + getQueryParametersForUrl();
     }
