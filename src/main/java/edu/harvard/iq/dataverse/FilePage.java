@@ -1060,7 +1060,7 @@ public class FilePage implements java.io.Serializable {
         Long userId = getUserIdForTool();
                   
         ExternalToolHandler externalToolHandler = new ExternalToolHandler(tool, file, apiToken, userId, file.getFileMetadata(),file.getFileMetadata().getDatasetVersion().getDataset().getGuestbook().getId(),session.getLocaleCode());
-        String toolUrl = externalToolHandler.getToolUrlWithQueryParams();
+        String toolUrl = externalToolHandler.getToolUrlWithEncryptedParams();
         logger.fine("Request Access with " + toolUrl);
         PrimeFaces.current().executeScript("window.open('"+toolUrl + "', target='_blank');"); 
     }
