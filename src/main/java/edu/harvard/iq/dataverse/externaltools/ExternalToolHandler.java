@@ -246,10 +246,19 @@ public class ExternalToolHandler {
         JSONObject json = new JSONObject();
         JSONObject payload = new JSONObject();
         String[] param_key_value = null;
-        for (String param : params) {
+        String param_key = null;
+        String param_value = null;
+        for (String param : params) {   
            param_key_value = param.split("=");
-           payload.put(param_key_value[0], param_key_value[1]);	
-        }
+           param_key = param_key_value[0];
+           param_value = param_key_value[1];
+           if(param_key.indexOf("Id")>0){
+               payload.put(param_key,Long.parseLong(param_value));
+           } //have to figure out array of file id's
+           else{
+            payload.put(param_key_value[0], param_key_value[1]);	
+           }
+        }   
         json.put("payload", payload); //needs to be configurable
         return json;
     } 
