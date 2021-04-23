@@ -253,7 +253,14 @@ public class ExternalToolHandler {
            param_key = param_key_value[0];
            param_value = param_key_value[1];
            if(param_key.indexOf("Id")>0){
-               payload.put(param_key,Long.parseLong(param_value));
+               if(param_value.indexOf("[") > 0){ //an array as a string "[1,2,3]"
+                   param_value = param_value.replace("[", "").replace("]",""); //convert it to a string of comma separated longs
+                   long[] array = java.util.Arrays.stream(param_value.substring(1, param_value.length()-1).split(",")).map(String::trim).mapToLong(Long::parseLong).toArray();
+                           //mapToInt(Integer::parseInt).toArray();
+                   payload.put(param_key,array);
+               } else{
+                 payload.put(param_key,Long.parseLong(param_value));
+               }
            } //have to figure out array of file id's
            else{
             payload.put(param_key_value[0], param_key_value[1]);	
