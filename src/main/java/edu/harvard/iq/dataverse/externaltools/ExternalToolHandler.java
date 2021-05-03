@@ -253,17 +253,17 @@ public class ExternalToolHandler {
            param_key = param_key_value[0];
            param_value = param_key_value[1];
            if(param_key.indexOf("Id")>0){
-               if(param_value.indexOf("[") > 0){ //an array as a string "[1,2,3]"
-                   param_value = param_value.replace("[", "").replace("]",""); //convert it to a string of comma separated longs
+               if(param_key.equalsIgnoreCase("fileId")){ //hack but want the value to be an actual array
+                   param_value = param_value.replace("[", "").replace("]",""); //future proofing to convert string to a string of comma separated longs
                    long[] array = java.util.Arrays.stream(param_value.substring(1, param_value.length()-1).split(",")).map(String::trim).mapToLong(Long::parseLong).toArray();
                            //mapToInt(Integer::parseInt).toArray();
                    payload.put(param_key,array);
                } else{
-                 payload.put(param_key,Long.parseLong(param_value));
+                 payload.put(param_key,Long.parseLong(param_value)); //single int value like datasetId=45
                }
-           } //have to figure out array of file id's
+           }
            else{
-            payload.put(param_key_value[0], param_key_value[1]);	
+            payload.put(param_key_value[0], param_key_value[1]);
            }
         }   
         json.put("payload", payload); //needs to be configurable
