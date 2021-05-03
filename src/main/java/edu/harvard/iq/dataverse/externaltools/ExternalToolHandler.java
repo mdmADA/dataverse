@@ -211,25 +211,29 @@ public class ExternalToolHandler {
         
         JSONObject cipherPayload = this.getJSONPayloadForEncryption();
         
+        //need to make all of these configurable
         String ciphertextUserXAgentValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.13TNSHDaxJyPUvJhoQ0z2bSwH7jUjXqBNxvikDgRSQM";
         String encryptedParams = "";
         String ciphertextUserXAgentHeader = "User-X-Agent";
-        //get this from the database? where? needs to be changed frequently I would think
+        //get this values from the database? where? needs to be changed frequently I would think
         
         URL ciphertextUrl = new URL("https://dataverse-tools.ada.edu.au/api/ciphertext");
         HttpURLConnection connection = (HttpURLConnection)ciphertextUrl.openConnection();
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json; utf-8");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty(ciphertextUserXAgentHeader,ciphertextUserXAgentValue);
-        connection.setDoOutput(true);
         
         try(OutputStream os = connection.getOutputStream()) {
             byte[] input = cipherPayload.toString().getBytes();
-            os.write(input, 0, input.length);			
+            os.write(input, 0, input.length);
+            os.flush();
+            os.close();
         }
         
         int status = connection.getResponseCode();
+        
         if (status != 200) {
             logger.warning("Failed to get cipher from " + ciphertextUrl.toString());
             return encryptedParams;
