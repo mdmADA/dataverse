@@ -233,13 +233,13 @@ public class ExternalToolHandler {
         
         int status = connection.getResponseCode();
         
-        if (status != 200) {
+        if (status >= 200 && status < 300) {
+            JsonObject cipherJSON = Json.createReader(connection.getInputStream()).readObject();
+            encryptedParams = cipherJSON.getString("ciphertext");
+        } else {
             logger.warning("Failed to get cipher from " + ciphertextUrl.toString());
             return encryptedParams;
         }
-        
-        JsonObject cipherJSON = Json.createReader(connection.getInputStream()).readObject();
-        encryptedParams = cipherJSON.getString("ciphertext");
         
         return encryptedParams;
     }
