@@ -1,5 +1,6 @@
 package edu.harvard.iq.dataverse.externaltools;
 
+import cern.colt.Arrays;
 import edu.harvard.iq.dataverse.DataFile;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetVersion;
@@ -9,6 +10,7 @@ import edu.harvard.iq.dataverse.authorization.users.ApiToken;
 import edu.harvard.iq.dataverse.externaltools.ExternalTool.ReservedWord;
 import edu.harvard.iq.dataverse.util.SystemConfig;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -254,10 +256,11 @@ public class ExternalToolHandler {
            param_value = param_key_value[1];
            if(param_key.indexOf("Id")>0){
                if(param_key.equalsIgnoreCase("fileId")){ //hack but want the value to be an actual array
-                   param_value = param_value.replace("[", "").replace("]",""); //future proofing to convert string to a string of comma separated longs
-                   long[] array = java.util.Arrays.stream(param_value.substring(1, param_value.length()-1).split(",")).map(String::trim).mapToLong(Long::parseLong).toArray();
+                   //param_value = param_value.replace("[", "").replace("]",""); //future proofing to convert string to a string of comma separated longs
+                   //long[] array = java.util.Arrays.stream(param_value.substring(1, param_value.length()-1).split(",")).map(String::trim).mapToLong(Long::parseLong).toArray();
                            //mapToInt(Integer::parseInt).toArray();
-                   payload.put(param_key,array);
+                   long fileIdAsLong = Long.parseLong(param_value);
+                   payload.put(param_key,Json.createArrayBuilder().add(fileIdAsLong).build());//for an array of long's, would have to loop and .add() to createArrayBuilder
                } else{
                  payload.put(param_key,Long.parseLong(param_value)); //single int value like datasetId=45
                }
