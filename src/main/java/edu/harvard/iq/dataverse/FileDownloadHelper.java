@@ -6,9 +6,16 @@
 package edu.harvard.iq.dataverse;
 
 import edu.harvard.iq.dataverse.authorization.Permission;
+import edu.harvard.iq.dataverse.authorization.AuthenticationServiceBean;
+import edu.harvard.iq.dataverse.authorization.users.ApiToken;
+import edu.harvard.iq.dataverse.authorization.users.User;
 import edu.harvard.iq.dataverse.authorization.users.AuthenticatedUser;
+import edu.harvard.iq.dataverse.privateurl.PrivateUrl;
 import edu.harvard.iq.dataverse.authorization.users.PrivateUrlUser;
+import edu.harvard.iq.dataverse.privateurl.PrivateUrlServiceBean;
 import edu.harvard.iq.dataverse.externaltools.ExternalTool;
+import edu.harvard.iq.dataverse.externaltools.ExternalToolHandler;
+import edu.harvard.iq.dataverse.externaltools.ExternalToolServiceBean;
 import edu.harvard.iq.dataverse.util.BundleUtil;
 import edu.harvard.iq.dataverse.util.FileUtil;
 import static edu.harvard.iq.dataverse.util.JsfHelper.JH;
@@ -43,6 +50,12 @@ public class FileDownloadHelper implements java.io.Serializable {
     DataverseRequestServiceBean dvRequestService;
 
     @EJB
+    AuthenticationServiceBean authService;
+    
+    @EJB
+    PrivateUrlServiceBean privateUrlService;
+    
+    @EJB
     PermissionServiceBean  permissionService;
     
     @EJB
@@ -53,6 +66,9 @@ public class FileDownloadHelper implements java.io.Serializable {
     
     @EJB
     DataFileServiceBean datafileService;
+    
+    @EJB
+    ExternalToolServiceBean externalToolService;
 
     private final Map<Long, Boolean> fileDownloadPermissionMap = new HashMap<>(); // { FileMetadata.id : Boolean } 
 
@@ -295,7 +311,60 @@ public class FileDownloadHelper implements java.io.Serializable {
 
     }
 
-     public void requestAccessMultiple(List<DataFile> files) {
+    private ApiToken getApiToken(User user){
+        ApiToken apiToken = null;
+        if (user instanceof AuthenticatedUser) {
+                AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+                apiToken = authService.findApiTokenByUser(authenticatedUser);
+                if (apiToken == null) {
+                    //No un-expired token
+                    apiToken = authService.generateApiTokenForUser(authenticatedUser);
+                }
+            } else if (user instanceof PrivateUrlUser) {
+                PrivateUrlUser privateUrlUser = (PrivateUrlUser) user;
+                PrivateUrl privateUrl = privateUrlService.getPrivateUrlFromDatasetId(privateUrlUser.getDatasetId());
+                apiToken = new ApiToken();
+                apiToken.setTokenString(privateUrl.getToken());
+            }
+        return apiToken;
+    }
+    
+    private ExternalTool getRequestAccessExternalTool() {
+        ExternalTool requestAccessTool = null;        
+        
+        List<ExternalTool> extRequestAccessTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.REQUESTACCESS);
+        if(extRequestAccessTools != null && !extRequestAccessTools.isEmpty()){
+            requestAccessTool = extRequestAccessTools.get(0);
+        }
+  
+        return requestAccessTool;
+    }
+    
+    private boolean requestAccessWithExternalTool(){
+        boolean requestedAccess = false;
+        
+        ExternalTool requestAccessTool = getRequestAccessExternalTool();      
+        
+        if(requestAccessTool != null){
+            Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner(); //assumption is that the files are from the same dataset
+            ApiToken userApiToken = getApiToken(session.getUser());
+            ExternalToolHandler externalToolHandler = new ExternalToolHandler(requestAccessTool, dataset, this.filesForRequestAccess, userApiToken,session.getLocaleCode());
+            String toolUrl = externalToolHandler.getToolUrlWithEncryptedParams();
+            logger.fine("Request Access with " + toolUrl);
+            PrimeFaces.current().executeScript("window.open('"+toolUrl + "', target='_blank');");
+            requestedAccess = true;
+        }
+        
+        return requestedAccess;
+    }
+    
+    public void requestAccessMultiple(List<DataFile> files) {
+       
+        if(requestAccessWithExternalTool()){
+           //do nothing except return;
+           return;
+        }
+        
          //need to verify that a valid request was made before 
          //sending the notification - if at least one is valid send the notification
          boolean succeeded = false;
@@ -327,6 +396,11 @@ public class FileDownloadHelper implements java.io.Serializable {
     
      private boolean processRequestAccess(DataFile file, Boolean sendNotification) {
 
+         if(requestAccessWithExternalTool()){
+           //do nothing except return;
+           return;
+         }
+         
          if (fileDownloadService.requestAccess(file.getId())) {
              // update the local file object so that the page properly updates
              if(file.getFileAccessRequesters() == null){
