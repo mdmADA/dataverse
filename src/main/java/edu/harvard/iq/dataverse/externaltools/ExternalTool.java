@@ -126,7 +126,8 @@ public class ExternalTool implements Serializable {
 
         EXPLORE("explore"),
         CONFIGURE("configure"),
-        PREVIEW("preview");
+        PREVIEW("preview"),
+        REQUESTACCESS("requestaccess");
 
         private final String text;
 
@@ -282,15 +283,17 @@ public class ExternalTool implements Serializable {
         // better. The choice of curly braces is somewhat arbitrary, but has been observed in documenation for
         // various REST APIs. For example, "Variable substitutions will be made when a variable is named in {brackets}."
         // from https://swagger.io/specification/#fixed-fields-29 but that's for URLs.
-        FILE_ID("fileId"),
+        FILE_ID("fileId"), //note that the fileId can be an array of file Ids 
         FILE_PID("filePid"),
         SITE_URL("siteUrl"),
+        USER_ID("userId"),
         API_TOKEN("apiToken"),
         // datasetId is the database id
         DATASET_ID("datasetId"),
         // datasetPid is the DOI or Handle
         DATASET_PID("datasetPid"),
         DATASET_VERSION("datasetVersion"),
+        GUESTBOOK_ID("guestbookId"),
         FILE_METADATA_ID("fileMetadataId"),
         LOCALE_CODE("localeCode");
 
