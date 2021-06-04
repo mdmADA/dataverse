@@ -16,6 +16,11 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import java.net.HttpURLConnection;
+import org.json.simple.JSONObject;
+import java.net.URL;
+import java.io.OutputStream;
+import java.io.IOException;
 
 /**
  * Handles an operation on a specific file. Requires a file id in order to be
@@ -28,10 +33,13 @@ public class ExternalToolHandler {
 
     private final ExternalTool externalTool;
     private final DataFile dataFile;
+    private final List<DataFile> dataFiles;
     private final Dataset dataset;
     private final FileMetadata fileMetadata;
 
     private ApiToken apiToken;
+    private Long userId;
+    private Long guestbookId;
     private String localeCode;
 
     /**
@@ -59,6 +67,7 @@ public class ExternalToolHandler {
         this.fileMetadata = fileMetadata;
         dataset = fileMetadata.getDatasetVersion().getDataset();
         this.localeCode = localeCode;
+        this.dataFiles = null;
     }
 
     /**
@@ -80,15 +89,36 @@ public class ExternalToolHandler {
         this.apiToken = apiToken;
         this.dataFile = null;
         this.fileMetadata = null;
+        this.dataFiles = null;
         this.localeCode = localeCode;
     }
 
+    public ExternalToolHandler(ExternalTool externalTool, Dataset ds, List<DataFile> dfs, ApiToken apiToken, String localeCode) {
+        this.externalTool = externalTool;
+        if (ds == null) {
+            String error = "A Dataset is required.";
+            logger.warning("Error in ExternalToolHandler constructor: " + error);
+            throw new IllegalArgumentException(error);
+        }
+        this.dataset = ds;
+        this.apiToken = apiToken;
+        this.guestbookId = dataset.getGuestbook() == null ? null : dataset.getGuestbook().getId();
+        this.dataFile = null;
+        this.fileMetadata = null;
+        this.dataFiles = dfs;
+        this.localeCode = localeCode;
+    }
+    
     public DataFile getDataFile() {
         return dataFile;
     }
 
     public FileMetadata getFileMetadata() {
         return fileMetadata;
+    }
+    
+    public List<DataFile> getDataFiles() {
+        return dataFiles;
     }
 
     public ApiToken getApiToken() {
@@ -106,14 +136,24 @@ public class ExternalToolHandler {
     
     // TODO: rename to handleRequest() to someday handle sending headers as well as query parameters.
     public String getQueryParametersForUrl(boolean preview) {
+        List<String> params = getQueryKeyValuePairs();
+        if (!preview) {
+            return "?" + String.join("&", params);
+        } else {
+            return "?" + String.join("&", params) + "&preview=true";
+        }
+    }
+    
+    private List<String> getQueryKeyValuePairs(){
+        List<String> params = new ArrayList<>();
         String toolParameters = externalTool.getToolParameters();
         JsonReader jsonReader = Json.createReader(new StringReader(toolParameters));
         JsonObject obj = jsonReader.readObject();
         JsonArray queryParams = obj.getJsonArray("queryParameters");
         if (queryParams == null || queryParams.isEmpty()) {
-            return "";
+            return params;
         }
-        List<String> params = new ArrayList<>();
+        
         queryParams.getValuesAs(JsonObject.class).forEach((queryParam) -> {
             queryParam.keySet().forEach((key) -> {
                 String value = queryParam.getString(key);
@@ -123,12 +163,10 @@ public class ExternalToolHandler {
                 }
             });
         });
-        if (!preview) {
-            return "?" + String.join("&", params);
-        } else {
-            return "?" + String.join("&", params) + "&preview=true";
-        }
-    }
+        
+        return params;
+    } 
+    
 
     private String getQueryParam(String key, String value) {
         ReservedWord reservedWord = ReservedWord.fromString(value);
@@ -142,6 +180,8 @@ public class ExternalToolHandler {
                     return key + "=" + getDataFile().getGlobalId();
                 }
                 break;
+            case FILE_IDs:
+                return key + "=" + getDataFiles().toString();
             case SITE_URL:
                 return key + "=" + SystemConfig.getDataverseSiteUrlStatic();
             case API_TOKEN:
@@ -150,6 +190,13 @@ public class ExternalToolHandler {
                 if (theApiToken != null) {
                     apiTokenString = theApiToken.getTokenString();
                     return key + "=" + apiTokenString;
+                }
+                break;
+            case USER_ID:
+                return key + "=" + this.userId;
+            case GUESTBOOK_ID:
+                if(dataset.getGuestbook() != null){
+                    return key + "=" + dataset.getGuestbook().getId().toString();
                 }
                 break;
             case DATASET_ID:
@@ -184,6 +231,16 @@ public class ExternalToolHandler {
         return null;
     }
 
+    public String getToolUrlWithEncryptedParams() {
+        String url = "";
+        try{
+           url = externalTool.getToolUrl() + getEncryptedQueryParametersForUrl();
+        } catch(IOException exc){
+            logger.severe("Error getting Encrypted Params.");
+        }
+        return url;
+    }
+    
     public String getToolUrlWithQueryParams() {
         return externalTool.getToolUrl() + getQueryParametersForUrl();
     }
@@ -191,6 +248,75 @@ public class ExternalToolHandler {
     public String getToolUrlForPreviewMode() {
         return externalTool.getToolUrl() + getQueryParametersForUrl(true);
     }
+    
+    
+    
+     public String getEncryptedQueryParametersForUrl() throws IOException{
+        
+        JSONObject cipherPayload = this.getJSONPayloadForEncryption();
+        
+        //need to make all of these configurable
+        String ciphertextUserXAgentValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.13TNSHDaxJyPUvJhoQ0z2bSwH7jUjXqBNxvikDgRSQM";
+        String encryptedParams = "";
+        String ciphertextUserXAgentHeader = "User-X-Agent";
+        //get this values from the database? where? needs to be changed frequently I would think
+        
+        URL ciphertextUrl = new URL("https://dataverse-tools.ada.edu.au/api/ciphertext");
+        HttpURLConnection connection = (HttpURLConnection)ciphertextUrl.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty(ciphertextUserXAgentHeader,ciphertextUserXAgentValue);
+        
+        try(OutputStream os = connection.getOutputStream()) {
+            byte[] input = cipherPayload.toString().getBytes();
+            os.write(input, 0, input.length);
+            os.flush();
+            os.close();
+        }
+        
+        int status = connection.getResponseCode();
+        
+        if (status >= 200 && status < 300) {
+            JsonObject cipherJSON = Json.createReader(connection.getInputStream()).readObject();
+            encryptedParams = cipherJSON.getString("ciphertext");
+        } else {
+            logger.warning("Failed to get cipher from " + ciphertextUrl.toString());
+            return encryptedParams;
+        }
+        
+        return encryptedParams;
+    }
+    
+    private JSONObject getJSONPayloadForEncryption(){
+        List<String> params = this.getQueryKeyValuePairs();
+        
+        //create a json object with the payload to send for encryption
+        JSONObject json = new JSONObject();
+        JSONObject payload = new JSONObject();
+        String[] param_key_value = null;
+        String param_key = null;
+        String param_value = null;
+        for (String param : params) {   
+           param_key_value = param.split("=");
+           param_key = param_key_value[0];
+           param_value = param_key_value[1];
+           if(param_key.indexOf("Id")>0){
+               if(param_key.equalsIgnoreCase("fileId") ){ //hack but want the value to be an actual array
+                   long fileIdAsLong = Long.parseLong(param_value);
+                   payload.put(param_key,Json.createArrayBuilder().add(fileIdAsLong).build());//for an array of long's, would have to loop and .add() to createArrayBuilder
+               } else{
+                 payload.put(param_key,Long.parseLong(param_value)); //single int value like datasetId=45
+               }
+           }
+           else{
+            payload.put(param_key_value[0], param_key_value[1]);
+           }
+        }   
+        json.put("payload", payload); //needs to be configurable
+        return json;
+    } 
 
     public ExternalTool getExternalTool() {
         return externalTool;
