@@ -40,8 +40,6 @@
         <flyway.version>5.2.4</flyway.version>
         <jhove.version>1.20.1</jhove.version>
         <jacoco.version>0.8.6</jacoco.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <pluginRepositories>
         <pluginRepository>
