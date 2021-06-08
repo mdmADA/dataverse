@@ -398,7 +398,7 @@ public class FileDownloadHelper implements java.io.Serializable {
 
          if(requestAccessWithExternalTool()){
            //do nothing except return;
-           return;
+           return true;
          }
          
          if (fileDownloadService.requestAccess(file.getId())) {
