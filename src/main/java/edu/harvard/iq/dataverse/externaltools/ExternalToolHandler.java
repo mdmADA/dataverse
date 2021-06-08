@@ -180,8 +180,6 @@ public class ExternalToolHandler {
                     return key + "=" + getDataFile().getGlobalId();
                 }
                 break;
-            case FILE_IDs:
-                return key + "=" + getDataFiles().toString();
             case SITE_URL:
                 return key + "=" + SystemConfig.getDataverseSiteUrlStatic();
             case API_TOKEN:
