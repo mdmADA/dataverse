@@ -329,6 +329,15 @@ public class FileDownloadHelper implements java.io.Serializable {
         return apiToken;
     }
     
+    private Long getUserId(){
+        User user = session.getUser();
+        Long userId = null;
+        if (user instanceof AuthenticatedUser){
+            userId = ((AuthenticatedUser)user).getId();
+        } //otherwise?
+        return userId;
+    }
+    
     private ExternalTool getRequestAccessExternalTool() {
         ExternalTool requestAccessTool = null;        
         
@@ -348,7 +357,8 @@ public class FileDownloadHelper implements java.io.Serializable {
         if(requestAccessTool != null){
             Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner(); //assumption is that the files are from the same dataset
             ApiToken userApiToken = getApiToken(session.getUser());
-            ExternalToolHandler externalToolHandler = new ExternalToolHandler(requestAccessTool, dataset, this.filesForRequestAccess, userApiToken,session.getLocaleCode());
+            Long userId = this.getUserId();
+            ExternalToolHandler externalToolHandler = new ExternalToolHandler(requestAccessTool, dataset, this.filesForRequestAccess, userId, userApiToken,session.getLocaleCode());
             String toolUrl = externalToolHandler.getToolUrlWithEncryptedParams();
             logger.fine("Request Access with " + toolUrl);
             PrimeFaces.current().executeScript("window.open('"+toolUrl + "', target='_blank');");
