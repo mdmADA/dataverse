@@ -94,13 +94,14 @@ public class ExternalToolHandler {
         this.localeCode = localeCode;
     }
 
-    public ExternalToolHandler(ExternalTool externalTool, Dataset ds, List<DataFile> dfs, ApiToken apiToken, String localeCode) {
+    public ExternalToolHandler(ExternalTool externalTool, Dataset ds, List<DataFile> dfs, Long userId, ApiToken apiToken, String localeCode) {
         this.externalTool = externalTool;
         if (ds == null) {
             String error = "A Dataset is required.";
             logger.warning("Error in ExternalToolHandler constructor: " + error);
             throw new IllegalArgumentException(error);
         }
+        this.userId = userId;
         this.dataset = ds;
         this.apiToken = apiToken;
         this.guestbookId = dataset.getGuestbook() == null ? null : dataset.getGuestbook().getId();
@@ -336,6 +337,7 @@ public class ExternalToolHandler {
            }
         }   
         json.put("payload", payload); //needs to be configurable
+        System.out.println("payload: " + payload.toJSONString());
         return json;
     } 
 
