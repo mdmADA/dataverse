@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.net.HttpURLConnection;
@@ -173,7 +174,19 @@ public class ExternalToolHandler {
         switch (reservedWord) {
             case FILE_ID:
                 // getDataFile is never null for file tools because of the constructor
-                return key + "=" + getDataFile().getId();
+                //return key + "=" + getDataFile().getId();
+                if(this.dataFile != null){
+                    return key + "=" + getDataFile().getId();
+                }
+                else if(this.dataFiles != null && !this.dataFiles.isEmpty()){
+                    String listOfIdsAsString = "";
+                    for(DataFile df: this.dataFiles) {
+                        listOfIdsAsString = listOfIdsAsString + "," + df.getId();
+                    }
+                    listOfIdsAsString = listOfIdsAsString.substring(1); //remove the first ,
+                    return key + "=" + listOfIdsAsString;
+                }
+                break;
             case FILE_PID:
                 GlobalId filePid = getDataFile().getGlobalId();
                 if (filePid != null) {
@@ -302,8 +315,18 @@ public class ExternalToolHandler {
            param_value = param_key_value[1];
            if(param_key.indexOf("Id")>0){
                if(param_key.equalsIgnoreCase("fileId") ){ //hack but want the value to be an actual array
-                   long fileIdAsLong = Long.parseLong(param_value);
-                   payload.put(param_key,Json.createArrayBuilder().add(fileIdAsLong).build());//for an array of long's, would have to loop and .add() to createArrayBuilder
+                   if(param_value.indexOf(",") > 0){ //list of longs
+                        JsonArrayBuilder jab = Json.createArrayBuilder();
+                        String[] fileIdsArray = param_value.split(",");
+                        for (String number : fileIdsArray) {
+                            jab.add(Long.parseLong(number.trim()));
+                        }
+                        payload.put(param_key, jab.build());
+                   }
+                   else{
+                    long fileIdAsLong = Long.parseLong(param_value);
+                    payload.put(param_key,Json.createArrayBuilder().add(fileIdAsLong).build());//for an array of long's, would have to loop and .add() to createArrayBuilder
+                   } 
                } else{
                  payload.put(param_key,Long.parseLong(param_value)); //single int value like datasetId=45
                }
