@@ -338,14 +338,17 @@ public class FileDownloadHelper implements java.io.Serializable {
         return userId;
     }
     
-    private ExternalTool getRequestAccessExternalTool() {
+    private ExternalTool getRequestAccessExternalTool(Dataset dataset) {
         ExternalTool requestAccessTool = null;        
         
-        List<ExternalTool> extRequestAccessTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.REQUESTACCESS);
-        if(extRequestAccessTools != null && !extRequestAccessTools.isEmpty()){
-            requestAccessTool = extRequestAccessTools.get(0);
+        if(dataset.getGuestbook() != null){ //only look for a requestAccessTool if there is no guestbook
+        
+            List<ExternalTool> extRequestAccessTools = externalToolService.findDatasetToolsByType(ExternalTool.Type.REQUESTACCESS);
+            if(extRequestAccessTools != null && !extRequestAccessTools.isEmpty()){
+                requestAccessTool = extRequestAccessTools.get(0);
+            }
         }
-  
+        
         return requestAccessTool;
     }
     
@@ -353,11 +356,8 @@ public class FileDownloadHelper implements java.io.Serializable {
         boolean requestedAccess = false;
         
         Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner();
-        if(dataset.getGuestbook() == null){
-            return requestedAccess; //requestedAccess is false - don't use external tool if there is no guestbook as there won't be any questions to ask
-        }
-        
-        ExternalTool requestAccessTool = getRequestAccessExternalTool();      
+       
+        ExternalTool requestAccessTool = getRequestAccessExternalTool(dataset);      
         
         if(requestAccessTool != null){
             //Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner(); //assumption is that the files are from the same dataset
