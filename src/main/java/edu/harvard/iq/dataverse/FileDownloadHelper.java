@@ -338,7 +338,7 @@ public class FileDownloadHelper implements java.io.Serializable {
         return userId;
     }
     
-    private ExternalTool getRequestAccessExternalTool(Dataset dataset) {
+    public ExternalTool getRequestAccessExternalTool(Dataset dataset) {
         ExternalTool requestAccessTool = null;        
         
         if(dataset.getGuestbook() != null){ //only look for a requestAccessTool if there is no guestbook
