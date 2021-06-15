@@ -27,6 +27,7 @@ import edu.harvard.iq.dataverse.DataFileServiceBean;
 import edu.harvard.iq.dataverse.Dataset;
 import edu.harvard.iq.dataverse.DatasetVersion;
 import edu.harvard.iq.dataverse.FileMetadata;
+import edu.harvard.iq.dataverse.FileDownloadHelper;
 import edu.harvard.iq.dataverse.TermsOfUseAndAccess;
 import edu.harvard.iq.dataverse.dataaccess.DataAccess;
 import edu.harvard.iq.dataverse.dataaccess.ImageThumbConverter;
@@ -1491,7 +1492,14 @@ public class FileUtil implements java.io.Serializable  {
 
         // 3. Guest Book:
         if (datasetVersion.getDataset() != null && datasetVersion.getDataset().getGuestbook() != null && datasetVersion.getDataset().getGuestbook().isEnabled() && datasetVersion.getDataset().getGuestbook().getDataverse() != null) {
+            FileDownloadHelper fdHelper = new FileDownloadHelper();
+              
+            if(fdHelper.getRequestAccessExternalTool(datasetVersion.getDataset()) != null)
+            {
+                return false; //if there is a request access download tool, the guestbook at download is not wanted 
+            }   
             logger.fine("Download popup required because of guestbook.");
+            
             return true;
         }
 
