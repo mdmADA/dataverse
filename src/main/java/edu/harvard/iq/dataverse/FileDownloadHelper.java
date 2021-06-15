@@ -352,10 +352,15 @@ public class FileDownloadHelper implements java.io.Serializable {
     private boolean requestAccessWithExternalTool(){
         boolean requestedAccess = false;
         
+        Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner();
+        if(dataset.getGuestbook() == null){
+            return requestedAccess; //requestedAccess is false - don't use external tool if there is no guestbook as there won't be any questions to ask
+        }
+        
         ExternalTool requestAccessTool = getRequestAccessExternalTool();      
         
         if(requestAccessTool != null){
-            Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner(); //assumption is that the files are from the same dataset
+            //Dataset dataset = ((this.filesForRequestAccess.get(0))).getOwner(); //assumption is that the files are from the same dataset
             ApiToken userApiToken = getApiToken(session.getUser());
             Long userId = this.getUserId();
             ExternalToolHandler externalToolHandler = new ExternalToolHandler(requestAccessTool, dataset, this.filesForRequestAccess, userId, userApiToken,session.getLocaleCode());
