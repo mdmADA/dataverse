@@ -8,7 +8,7 @@ import edu.harvard.iq.dataverse.FileMetadata;
 import edu.harvard.iq.dataverse.Guestbook;
 import edu.harvard.iq.dataverse.TermsOfUseAndAccess;
 import edu.harvard.iq.dataverse.util.FileUtil.FileCitationExtension;
-
+import edu.harvard.iq.dataverse.FileDownloadHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -179,6 +179,8 @@ public class FileUtilTest {
             dataset.setGuestbook(guestbook);
             Dataverse dataverse = new Dataverse();
             guestbook.setDataverse(dataverse);
+            FileDownloadHelper fdh = new FileDownloadHelper();
+            assertEquals(true, fdh.getRequestAccessExternalTool(dataset)==null);//gb at download only occurs if there is no request access tool AND there is a guestbook
             assertEquals(true, FileUtil.isDownloadPopupRequired(datasetVersion));
         }
 
