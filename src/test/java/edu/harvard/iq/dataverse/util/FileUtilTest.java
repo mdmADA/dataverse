@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -180,8 +182,24 @@ public class FileUtilTest {
             Dataverse dataverse = new Dataverse();
             guestbook.setDataverse(dataverse);
             FileDownloadHelper fdh = new FileDownloadHelper();
-            assertEquals(true, fdh.getRequestAccessExternalTool(dataset)==null);//gb at download only occurs if there is no request access tool AND there is a guestbook
+            assertNull(fdh.getRequestAccessExternalTool(dataset));//gb at download only occurs if there is no request access tool AND there is a guestbook
             assertEquals(true, FileUtil.isDownloadPopupRequired(datasetVersion));
+        }
+        
+        @Test
+        public void testIsDownloadPopupRequiredNoGuestBook() {
+            DatasetVersion datasetVersion = new DatasetVersion();
+            datasetVersion.setVersionState(DatasetVersion.VersionState.RELEASED);
+            Dataset dataset = new Dataset();
+            datasetVersion.setDataset(dataset);
+            Guestbook guestbook = new Guestbook();
+            guestbook.setEnabled(true);
+            dataset.setGuestbook(guestbook);
+            Dataverse dataverse = new Dataverse();
+            guestbook.setDataverse(dataverse);
+            FileDownloadHelper fdh = new FileDownloadHelper();
+            assertNotNull(fdh.getRequestAccessExternalTool(dataset));//gb at download only occurs if there is no request access tool AND there is a guestbook
+            assertEquals(false, FileUtil.isDownloadPopupRequired(datasetVersion));
         }
 
         @Test
