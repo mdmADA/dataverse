@@ -1491,15 +1491,8 @@ public class FileUtil implements java.io.Serializable  {
         }
 
         // 3. Guest Book:
-        if (datasetVersion.getDataset() != null && datasetVersion.getDataset().getGuestbook() != null && datasetVersion.getDataset().getGuestbook().isEnabled() && datasetVersion.getDataset().getGuestbook().getDataverse() != null) {
-            FileDownloadHelper fdHelper = new FileDownloadHelper();
-              
-            if(fdHelper.getRequestAccessExternalTool(datasetVersion.getDataset()) != null)
-            {
-                return false; //if there is a request access download tool, the guestbook at download is not wanted 
-            }   
+        if (datasetVersion.getDataset() != null && datasetVersion.getDataset().getGuestbook() != null && datasetVersion.getDataset().getGuestbook().isEnabled() && datasetVersion.getDataset().getGuestbook().getDataverse() != null) {  
             logger.fine("Download popup required because of guestbook.");
-            
             return true;
         }
 
