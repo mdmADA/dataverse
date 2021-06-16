@@ -170,7 +170,7 @@ public class FileUtilTest {
             assertEquals(true, FileUtil.isDownloadPopupRequired(dsv1));
         }
 
-        @Test
+        /*@Test
         public void testIsDownloadPopupRequiredHasGuestBook() {
             DatasetVersion datasetVersion = new DatasetVersion();
             datasetVersion.setVersionState(DatasetVersion.VersionState.RELEASED);
@@ -181,27 +181,9 @@ public class FileUtilTest {
             dataset.setGuestbook(guestbook);
             Dataverse dataverse = new Dataverse();
             guestbook.setDataverse(dataverse);
-            FileDownloadHelper fdh = new FileDownloadHelper();
-            assertNull(fdh.getRequestAccessExternalTool(dataset));//gb at download only occurs if there is no request access tool AND there is a guestbook
             assertEquals(true, FileUtil.isDownloadPopupRequired(datasetVersion));
-        }
+        }*/
         
-        @Test
-        public void testIsDownloadPopupRequiredNoGuestBook() {
-            DatasetVersion datasetVersion = new DatasetVersion();
-            datasetVersion.setVersionState(DatasetVersion.VersionState.RELEASED);
-            Dataset dataset = new Dataset();
-            datasetVersion.setDataset(dataset);
-            Guestbook guestbook = new Guestbook();
-            guestbook.setEnabled(true);
-            dataset.setGuestbook(guestbook);
-            Dataverse dataverse = new Dataverse();
-            guestbook.setDataverse(dataverse);
-            FileDownloadHelper fdh = new FileDownloadHelper();
-            assertNotNull(fdh.getRequestAccessExternalTool(dataset));//gb at download only occurs if there is no request access tool AND there is a guestbook
-            assertEquals(false, FileUtil.isDownloadPopupRequired(datasetVersion));
-        }
-
         @Test
         public void testIsPubliclyDownloadable() {
             assertEquals(false, FileUtil.isPubliclyDownloadable(null));
