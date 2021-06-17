@@ -352,6 +352,33 @@ public class FileDownloadHelper implements java.io.Serializable {
         return requestAccessTool;
     }
     
+    public boolean isGuestbookResponseRequired(Dataset dataset){
+        boolean required = false;
+        
+        if(dataset.getGuestbook() != null){
+            List<GuestbookResponse> gbrs = guestbookResponseService.findBy(session.getUser(),dataset.getId(),dataset.getGuestbook().getId());
+            
+            //first collect all the gbr datafile id's
+            List<Long> gbrDfIds = new ArrayList<>();
+            for(GuestbookResponse gbr : gbrs) {
+                gbrDfIds.add(gbr.getDataFile().getId());
+            }
+           
+            //now sort through the filesForRequestAccess - see if there are any not in the guestbook responses for the user
+            //if there are any missing, then return true as soon as you find 1
+            //do we need to know which datafiles are missing responses so only those missing are written - or do we just write them all again?
+            
+            for(DataFile df: this.filesForRequestAccess){
+                if(gbrDfIds.contains(df.getId()) ){
+                    required = true;
+                    break; //stop looking - all we need is one true
+                }
+            }
+        }
+        
+        return required;
+    }
+    
     private boolean requestAccessWithExternalTool(){
         boolean requestedAccess = false;
         
