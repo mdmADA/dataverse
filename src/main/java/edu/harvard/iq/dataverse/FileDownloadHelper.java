@@ -355,8 +355,12 @@ public class FileDownloadHelper implements java.io.Serializable {
     public boolean isGuestbookResponseRequired(Dataset dataset){
         boolean required = false;
         
-        if(dataset.getGuestbook() != null){
-            List<GuestbookResponse> gbrs = guestbookResponseService.findBy(session.getUser(),dataset.getId(),dataset.getGuestbook().getId());
+        if(!(session.getUser() instanceof AuthenticatedUser)){
+            return true; //need to get guestbookresponse for non-authenticated users
+        }
+        
+        if(dataset.getGuestbook() != null){ //if there is no guestbook return false as there is no guestbook to get responses for
+            List<GuestbookResponse> gbrs = guestbookResponseService.findBy((AuthenticatedUser)session.getUser(),dataset.getId(),dataset.getGuestbook().getId());
             
             //first collect all the gbr datafile id's
             List<Long> gbrDfIds = new ArrayList<>();
