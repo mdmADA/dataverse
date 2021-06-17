@@ -916,4 +916,7 @@ public class GuestbookResponseServiceBean {
         return query.getResultList();
     }
     
+    public List<GuestbookResponse> findBy(AuthenticatedUser user, Long datasetId, Long guestbookId){
+        return em.createQuery("select count(o.id) from GuestbookResponse o where o.user_id = " + user.getId()+ " and o.dataset_id = " + datasetId + " and guestbook_id = " + guestbookId, GuestbookResponse.class).getResultList();
+    }
 }
