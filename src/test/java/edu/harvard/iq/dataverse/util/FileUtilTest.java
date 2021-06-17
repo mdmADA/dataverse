@@ -170,7 +170,7 @@ public class FileUtilTest {
             assertEquals(true, FileUtil.isDownloadPopupRequired(dsv1));
         }
 
-        /*@Test
+        @Test
         public void testIsDownloadPopupRequiredHasGuestBook() {
             DatasetVersion datasetVersion = new DatasetVersion();
             datasetVersion.setVersionState(DatasetVersion.VersionState.RELEASED);
@@ -182,7 +182,7 @@ public class FileUtilTest {
             Dataverse dataverse = new Dataverse();
             guestbook.setDataverse(dataverse);
             assertEquals(true, FileUtil.isDownloadPopupRequired(datasetVersion));
-        }*/
+        }
         
         @Test
         public void testIsPubliclyDownloadable() {
