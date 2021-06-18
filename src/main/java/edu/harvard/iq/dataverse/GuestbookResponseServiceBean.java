@@ -917,7 +917,6 @@ public class GuestbookResponseServiceBean {
     }
     
     public List<GuestbookResponse> findBy(AuthenticatedUser user, Long datasetId, Long guestbookId){
-        
-        return em.createQuery("select o from GuestbookResponse o where o.authenticateduserId = " + user.getId() + " and o.datasetId = " + datasetId + " and o.guestbookId = " + guestbookId, GuestbookResponse.class).getResultList();
+        return em.createQuery("select o from GuestbookResponse as o where o.authenticateduser.id = " + user.getId() + " and o.dataset.id = " + datasetId + " and o.guestbook.id = " + guestbookId, GuestbookResponse.class).getResultList();
     }
 }
