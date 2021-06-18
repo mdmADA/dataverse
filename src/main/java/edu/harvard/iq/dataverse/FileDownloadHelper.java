@@ -355,6 +355,10 @@ public class FileDownloadHelper implements java.io.Serializable {
     public boolean isGuestbookResponseRequired(Dataset dataset, List<FileMetadata> selectedFiles){
         boolean required = false;
         
+        if(selectedFiles == null){ //selectedFiles will be null when dataset.xhtml or file.xhtml is first called
+            return false;
+        }
+        
         if(!(session.getUser() instanceof AuthenticatedUser)){
             return true; //need to get guestbookresponse for non-authenticated users
         }
