@@ -27,10 +27,13 @@ import javax.validation.constraints.Size;
         @Index(columnList = "dataset_id")
 })
 
-@NamedQueries(
+@NamedQueries({
         @NamedQuery(name = "GuestbookResponse.findByAuthenticatedUserId",
-                query = "SELECT gbr FROM GuestbookResponse gbr WHERE gbr.authenticatedUser.id=:authenticatedUserId")
-)
+                query = "SELECT gbr FROM GuestbookResponse gbr WHERE gbr.authenticatedUser.id=:authenticatedUserId"),
+        @NamedQuery(name = "GuestbookResponse.findBy",
+                query = "Select gbr FROM GuestbookResponse gbr WHERE gbr.authenticatedUser.id=:authenticatedUserId and gbr.dataset.id=:datasetId and gbr.guestbook.id=:guestbookId")
+})
+                
 
 public class GuestbookResponse implements Serializable {
     private static final long serialVersionUID = 1L;
