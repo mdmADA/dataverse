@@ -352,7 +352,7 @@ public class FileDownloadHelper implements java.io.Serializable {
         return requestAccessTool;
     }
     
-    public boolean isGuestbookResponseRequired(Dataset dataset){
+    public boolean isGuestbookResponseRequired(Dataset dataset, List<FileMetadata> selectedFiles){
         boolean required = false;
         
         if(!(session.getUser() instanceof AuthenticatedUser)){
@@ -372,8 +372,8 @@ public class FileDownloadHelper implements java.io.Serializable {
             //if there are any missing, then return true as soon as you find 1
             //do we need to know which datafiles are missing responses so only those missing are written - or do we just write them all again?
             
-            for(DataFile df: this.filesForRequestAccess){
-                if(!gbrDfIds.contains(df.getId()) ){
+            for(FileMetadata fmd : selectedFiles){
+                if(!gbrDfIds.contains(fmd.getId()) ){
                     required = true;
                     break; //stop looking - all we need is one true
                 }
