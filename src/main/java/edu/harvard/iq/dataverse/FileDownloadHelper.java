@@ -373,7 +373,7 @@ public class FileDownloadHelper implements java.io.Serializable {
             //do we need to know which datafiles are missing responses so only those missing are written - or do we just write them all again?
             
             for(DataFile df: this.filesForRequestAccess){
-                if(gbrDfIds.contains(df.getId()) ){
+                if(!gbrDfIds.contains(df.getId()) ){
                     required = true;
                     break; //stop looking - all we need is one true
                 }
