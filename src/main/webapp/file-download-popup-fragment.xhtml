@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <p:fragment rendered="#{workingVersion.dataset.guestbook != null and fileDownloadHelper.isGuestbookResponseRequired(workingVersion.dataset,selectedFiles) and workingVersion.dataset.guestbook.enabled and downloadPopupRequired}" id="guestbookUIFragment">
+            <p:fragment rendered="#{workingVersion.dataset.guestbook != null and fileDownloadHelper.isGuestbookResponseRequired(workingVersion.dataset,guestbookResponse) and workingVersion.dataset.guestbook.enabled and downloadPopupRequired}" id="guestbookUIFragment">
                 <!--
                 Only validate the active context. For example, the user might be filling out
                 the guestbook on the Preview tab rather than after clicking the "download file"
