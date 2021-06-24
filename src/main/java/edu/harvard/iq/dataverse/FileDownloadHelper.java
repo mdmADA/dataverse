@@ -357,15 +357,15 @@ public class FileDownloadHelper implements java.io.Serializable {
     public boolean isGuestbookResponseRequired(Dataset dataset,GuestbookResponse guestbookResponse){
         boolean required = false;
         
+        if(!(session.getUser() instanceof AuthenticatedUser)){
+            return true; //need to get guestbookresponse for non-authenticated users
+        }
+        
         String selectedFileIdsStr = guestbookResponse.getSelectedFileIds();
         List<Long> selectedFileIdsList = Arrays.stream(selectedFileIdsStr.split(",")).map(Long::parseLong).collect(Collectors.toList());
         
         if(selectedFileIdsList == null || selectedFileIdsList.isEmpty()){ //selectedFiles will be null when dataset.xhtml or file.xhtml is first called
             return false;
-        }
-        
-        if(!(session.getUser() instanceof AuthenticatedUser)){
-            return true; //need to get guestbookresponse for non-authenticated users
         }
         
         if(dataset.getGuestbook() != null){ //if there is no guestbook return false as there is no guestbook to get responses for
