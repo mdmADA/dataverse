@@ -19,6 +19,8 @@ import edu.harvard.iq.dataverse.externaltools.ExternalToolServiceBean;
 import edu.harvard.iq.dataverse.util.BundleUtil;
 import edu.harvard.iq.dataverse.util.FileUtil;
 import static edu.harvard.iq.dataverse.util.JsfHelper.JH;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -352,10 +354,13 @@ public class FileDownloadHelper implements java.io.Serializable {
         return requestAccessTool;
     }
     
-    public boolean isGuestbookResponseRequired(Dataset dataset, List<FileMetadata> selectedFiles){
+    public boolean isGuestbookResponseRequired(Dataset dataset,GuestbookResponse guestbookResponse){
         boolean required = false;
         
-        if(selectedFiles == null){ //selectedFiles will be null when dataset.xhtml or file.xhtml is first called
+        String selectedFileIdsStr = guestbookResponse.getSelectedFileIds();
+        List<Long> selectedFileIdsList = Arrays.stream(selectedFileIdsStr.split(",")).map(Long::parseLong).collect(Collectors.toList());
+        
+        if(selectedFileIdsList == null || selectedFileIdsList.isEmpty()){ //selectedFiles will be null when dataset.xhtml or file.xhtml is first called
             return false;
         }
         
@@ -376,8 +381,8 @@ public class FileDownloadHelper implements java.io.Serializable {
             //if there are any missing, then return true as soon as you find 1
             //do we need to know which datafiles are missing responses so only those missing are written - or do we just write them all again?
             
-            for(FileMetadata fmd : selectedFiles){
-                if(!gbrDfIds.contains(fmd.getId()) ){
+            for(Long fileId : selectedFileIdsList){
+                if(!gbrDfIds.contains(fileId) ){
                     required = true;
                     break; //stop looking - all we need is one true
                 }
