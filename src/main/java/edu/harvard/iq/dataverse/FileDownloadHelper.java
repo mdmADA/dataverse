@@ -362,6 +362,11 @@ public class FileDownloadHelper implements java.io.Serializable {
         }
         
         String selectedFileIdsStr = guestbookResponse.getSelectedFileIds();
+        if(selectedFileIdsStr == null)
+        {
+            return false; //selectedFileIdsStr will be null when dataset.xhtml or file.xhtml is first called
+        }
+        
         List<Long> selectedFileIdsList = Arrays.stream(selectedFileIdsStr.split(",")).map(Long::parseLong).collect(Collectors.toList());
         
         if(selectedFileIdsList == null || selectedFileIdsList.isEmpty()){ //selectedFiles will be null when dataset.xhtml or file.xhtml is first called
